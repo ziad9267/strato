@@ -424,6 +424,12 @@ namespace skyline {
 
                 return reinterpret_cast<T>(ptr);
             }
+
+            /**
+             * @brief Translates a host address to the corresponding address in the guest address space
+             * @return The virtual address with `guestOffset` removed from it
+             */
+            u64 TranslateHostAddress(u8 *hostAddr) const;
         };
     }
 }

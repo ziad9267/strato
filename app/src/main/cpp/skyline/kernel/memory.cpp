@@ -679,4 +679,9 @@ namespace skyline::kernel {
     __attribute__((always_inline)) u64 MemoryManager::TranslateVirtualAddress(u64 vaddr) const {
         return vaddr + guestOffset;
     }
+
+    __attribute__((always_inline)) u64 MemoryManager::TranslateHostAddress(u8 *paddr) const {
+        assert(reinterpret_cast<u64>(paddr) >= guestOffset);
+        return reinterpret_cast<u64>(paddr) - guestOffset;
+    }
 }
