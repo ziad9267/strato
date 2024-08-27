@@ -20,10 +20,10 @@ namespace skyline::kernel::svc {
             LOGW("'size' not divisible by 2MB: 0x{:X}", size);
             return;
         } else if (state.process->memory.heap.size() < size) [[unlikely]] {
-            ctx.w0 = result::InvalidSize;
+            ctx.w0 = result::OutOfMemory;
             ctx.x1 = 0;
 
-            LOGW("'size' exceeded size of heap region: 0x{:X}", size);
+            LOGW("'size' exceeded size of heap region: 0x{:X} (heap region size: 0x{:X})", size, state.process->memory.heap.size());
             return;
         }
 

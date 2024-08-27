@@ -653,23 +653,34 @@ namespace skyline::kernel {
 
     size_t MemoryManager::GetUserMemoryUsage() {
         std::shared_lock lock{mutex};
-        size_t size{};
 
-        auto currChunk = chunks.lower_bound(heap.guest.data());
-
-        while (currChunk->first < heap.guest.end().base()) {
-            if (currChunk->second.state == memory::states::Heap)
-                size += currChunk->second.size;
-            ++currChunk;
+        size_t heapSize{};
+        auto heapChunk = chunks.lower_bound(heap.guest.data());
+        while (heapChunk->first < heap.guest.end().base()) {
+            if (heapChunk->second.state == memory::states::Heap)
+                heapSize += heapChunk->second.size;
+            ++heapChunk;
         }
 
-        return size + code.size() + state.process->mainThreadStack.size();
+        size_t codeSize{};
+        auto codeChunk = chunks.lower_bound(code.guest.data());
+        while (codeChunk->first < code.guest.end().base()) {
+            if (codeChunk->second.state == memory::states::Code || codeChunk->second.state == memory::states::CodeMutable)
+                codeSize += codeChunk->second.size;
+            ++codeChunk;
+        }
+
+        return codeSize + heapSize + state.process->mainThreadStack.size();
     }
 
     size_t MemoryManager::GetSystemResourceUsage() {
         std::shared_lock lock{mutex};
         constexpr size_t KMemoryBlockSize{0x40};
-        return std::min(static_cast<size_t>(state.process->npdm.meta.systemResourceSize), util::AlignUp(chunks.size() * KMemoryBlockSize, constant::PageSize));
+
+        size_t systemResourceSize{state.process->npdm.meta.systemResourceSize};
+        size_t chunksSize{util::AlignUp(chunks.size() * KMemoryBlockSize, constant::PageSize)};
+
+        return std::min(systemResourceSize, chunksSize);
     }
 
     __attribute__((always_inline)) span<u8> MemoryManager::GetHostSpan(span<u8> guestSpan) const {
