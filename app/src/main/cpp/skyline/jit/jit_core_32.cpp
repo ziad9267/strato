@@ -29,7 +29,7 @@ namespace skyline::jit {
         config.optimizations |= Dynarmic::OptimizationFlag::Unsafe_IgnoreGlobalMonitor;
         config.unsafe_optimizations = true;
 
-        config.fastmem_pointer = state.process->memory.base.data();
+        config.fastmem_pointer = reinterpret_cast<uintptr_t>(state.process->memory.base.data());
         config.fastmem_exclusive_access = true;
 
         config.define_unpredictable_behaviour = true;
