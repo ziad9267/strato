@@ -4,6 +4,7 @@ name: Build
 on:
   push: 
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -49,6 +50,7 @@ jobs:
 
       - name: Rename APKs
         run: |
+          ls -R
           mv app/build/outputs/apk/dev/release/app-dev-release.apk strato-release-build.apk
           mv app/build/outputs/apk/dev/reldebug/app-dev-reldebug.apk strato-reldebug-build.apk
 
