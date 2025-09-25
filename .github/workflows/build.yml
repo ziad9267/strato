@@ -48,20 +48,8 @@ jobs:
           CCACHE_COMPILERCHECK: "string:${{ env.NDK_VERSION }}" # Use NDK version instead of compiler timestamp
         run: ./gradlew --no-daemon --stacktrace --build-cache --parallel --configure-on-demand assembleMainlineRelease
 
-      - name: Rename APKs
-        run: |
-          ls -R
-          mv app/build/outputs/apk/dev/release/app-dev-release.apk strato-release-build.apk
-          mv app/build/outputs/apk/dev/reldebug/app-dev-reldebug.apk strato-reldebug-build.apk
-
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: strato-release-build.apk
-          path: strato-release-build.apk
-
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: strato-reldebug-build.apk
-          path: strato-reldebug-build.apk
+          name: strato-release-build
+          path: ./app/build/outputs/apk/mainline/release/app-mainline-release.apk
